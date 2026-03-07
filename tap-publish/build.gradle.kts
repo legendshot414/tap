@@ -31,9 +31,9 @@ publishing {
 
             url = uri(
                 if ("SNAPSHOT" in version as String) {
-                    "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+                    "https://central.sonatype.com/repository/maven-snapshots/"
                 } else {
-                    "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+                    "https://central.sonatype.com/repository/maven-releases/"
                 }
             )
         }

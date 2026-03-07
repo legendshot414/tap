@@ -17,20 +17,20 @@ subprojects {
 }
 
 // upstream
-coreDevJar {
-    from(subprojects.map { it.sourceSets["main"].output })
-}
-
-coreReobfJar {
-    subprojects.map { it.tasks.named("reobfJar").get() as RemapJar }.onEach {
-        from(zipTree(it.outputJar))
-    }.let {
-        dependsOn(it)
-    }
-}
-
-coreSourcesJar {
-    from(subprojects.map { it.sourceSets["main"].allSource })
-}
+//coreDevJar {
+//    from(subprojects.map { it.sourceSets["main"].output })
+//}
+//
+//coreReobfJar {
+//    subprojects.map { it.tasks.named("reobfJar").get() as RemapJar }.onEach {
+//        from(zipTree(it.outputJar))
+//    }.let {
+//        dependsOn(it)
+//    }
+//}
+//
+//coreSourcesJar {
+//    from(subprojects.map { it.sourceSets["main"].allSource })
+//}
 
 
