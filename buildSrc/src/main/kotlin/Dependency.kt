@@ -21,10 +21,10 @@ object Dependency {
     }
 
     object Dokka {
-        const val Version = "1.8.20"
+        const val Version = "2.1.0"
     }
 
     object Paper {
-        const val Version = "1.21"
+        const val Version = "1.21.1"
     }
 }

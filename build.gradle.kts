@@ -33,7 +33,9 @@ subprojects {
         implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
         implementation("org.jetbrains.kotlinx:kotlinx-serialization-protobuf:1.6.2")
 
-        testImplementation("org.junit.jupiter:junit-jupiter:5.7.1")
+        testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
+        testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.0")
+        testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.10.0")
     }
 
     tasks {
@@ -55,7 +57,7 @@ listOf("api", "core").forEach { projectName ->
 
             create<Jar>("dokkaJar") {
                 archiveClassifier.set("javadoc")
-                dependsOn("dokkaHtml")
+                dependsOn("dokkaGenerateHtml")
 
                 from("$buildDir/dokka/html/") {
                     include("**")

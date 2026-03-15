@@ -18,12 +18,10 @@
 package io.github.legendshot414.tap.v1_21_1.item
 
 import io.github.legendshot414.tap.item.ItemSupport
-import net.minecraft.nbt.CompoundTag
+import net.minecraft.nbt.NbtOps
 import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.item.ItemStack
-import org.bukkit.Bukkit
 import org.bukkit.craftbukkit.CraftEquipmentSlot
-import org.bukkit.craftbukkit.CraftServer
 import org.bukkit.craftbukkit.entity.CraftPlayer
 import org.bukkit.craftbukkit.inventory.CraftInventoryPlayer
 import org.bukkit.craftbukkit.inventory.CraftItemStack
@@ -34,13 +32,18 @@ import org.bukkit.inventory.PlayerInventory as BukkitPlayerInventory
 class NMSItemSupport : ItemSupport {
     override fun saveToJsonString(item: BukkitItemStack): String {
         val nmsItem = CraftItemStack.asNMSCopy(item)
-        return nmsItem.save((Bukkit.getServer() as CraftServer).server.registryAccess(), CompoundTag()).toString()
+
+        val nbt = ItemStack.CODEC
+            .encodeStart(NbtOps.INSTANCE, nmsItem)
+            .getOrThrow()
+
+        return nbt.toString()
     }
 
     override fun damageArmor(playerInventory: BukkitPlayerInventory, attackDamage: Double) {
-        val nmsInventory = (playerInventory as CraftInventoryPlayer).inventory
-        val nmsPlayer = nmsInventory.player
-        val damage = attackDamage.toInt()
+        if (attackDamage <= 0.0) return
+        val player = (playerInventory.holder as CraftPlayer).handle
+        val armorDamage = (attackDamage / 4.0).toFloat().coerceAtLeast(1.0f).toInt()
 
         val armorSlots = listOf(
             EquipmentSlot.HEAD,
@@ -48,19 +51,21 @@ class NMSItemSupport : ItemSupport {
             EquipmentSlot.LEGS,
             EquipmentSlot.FEET
         )
-
-        for (slot in armorSlots) {
-            val nmsSlot = CraftEquipmentSlot.getNMS(slot)
-
-            val nmsItem = nmsInventory.getItem(slot)
-
-            if (!nmsItem.isEmpty) {
-                nmsItem.hurtAndBreak(damage, nmsPlayer, nmsSlot)
+        EquipmentSlot.entries
+            .filter { it.isArmor }
+            .forEach { slot ->
+                val nmsSlot = CraftEquipmentSlot.getNMS(slot)
+                val item = player.getItemBySlot(nmsSlot)
+                if (!item.isEmpty) {
+                    item.hurtAndBreak(armorDamage, player, nmsSlot)
+                }
             }
-        }
+
     }
 
     override fun damageSlot(playerInventory: BukkitPlayerInventory, slot: EquipmentSlot, damage: Int) {
+        if (damage <= 0.0) return
+
         val nmsInventory = (playerInventory as CraftInventoryPlayer).inventory
         val nmsSlot = CraftEquipmentSlot.getNMS(slot)
 

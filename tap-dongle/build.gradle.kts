@@ -1,7 +1,7 @@
 import io.papermc.paperweight.tasks.RemapJar
 
 plugins {
-    id("io.papermc.paperweight.userdev") version "1.7.1" apply false
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.19" apply false
 }
 
 subprojects {
@@ -17,20 +17,18 @@ subprojects {
 }
 
 // upstream
-//coreDevJar {
-//    from(subprojects.map { it.sourceSets["main"].output })
-//}
-//
-//coreReobfJar {
-//    subprojects.map { it.tasks.named("reobfJar").get() as RemapJar }.onEach {
-//        from(zipTree(it.outputJar))
-//    }.let {
-//        dependsOn(it)
-//    }
-//}
-//
-//coreSourcesJar {
-//    from(subprojects.map { it.sourceSets["main"].allSource })
-//}
+coreDevJar {
+    from(subprojects.map { it.sourceSets["main"].output })
+}
 
+coreReobfJar {
+    subprojects.map { it.tasks.named("reobfJar").get() as RemapJar }.onEach {
+        from(zipTree(it.outputJar))
+    }.let {
+        dependsOn(it)
+    }
+}
 
+coreSourcesJar {
+    from(subprojects.map { it.sourceSets["main"].allSource })
+}

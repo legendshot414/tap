@@ -45,6 +45,7 @@ class NMSPacketSupport : PacketSupport {
                 EquipmentSlot.LEGS -> NMSEquipmentSlot.LEGS
                 EquipmentSlot.CHEST -> NMSEquipmentSlot.CHEST
                 EquipmentSlot.HEAD -> NMSEquipmentSlot.HEAD
+                EquipmentSlot.BODY -> NMSEquipmentSlot.BODY
                 else -> throw IllegalArgumentException("Unknown EquipmentSlot: $this")
             }
         }

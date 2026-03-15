@@ -24,14 +24,11 @@ import io.github.legendshot414.tap.fake.FakeSkinParts
 import io.github.legendshot414.tap.fake.FakeSupport
 import io.github.legendshot414.tap.v1_21_1.protocol.NMSPacketContainer
 import net.minecraft.core.registries.BuiltInRegistries
-import net.minecraft.network.protocol.game.ClientboundAddEntityPacket
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket
 import net.minecraft.server.level.ClientInformation
 import net.minecraft.server.level.ServerPlayer
-import net.minecraft.world.entity.EntityAttachment
 import net.minecraft.world.entity.item.FallingBlockEntity
 import net.minecraft.world.entity.item.ItemEntity
-import net.minecraft.world.phys.Vec3
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.World
@@ -100,53 +97,37 @@ class NMSFakeSupport : FakeSupport {
     override fun getMountedYOffset(entity: Entity): Double {
         entity as CraftEntity
 
-        return entity.handle.getAttachments().get(EntityAttachment.PASSENGER, 0, entity.handle.yRot).y
+        val nmsEntity = entity.handle
+        val passenger = nmsEntity.passengers.firstOrNull() ?: return 0.0
+
+        return nmsEntity.getPassengerRidingPosition(passenger).y
     }
 
     override fun getYOffset(entity: Entity): Double {
-        entity as CraftEntity
-
-        return entity.handle.getAttachments().get(EntityAttachment.VEHICLE, 0, entity.handle.yRot).y
+        return 0.0
     }
 
     /* Modified */
     override fun createSpawnPacket(entity: Entity): Array<NMSPacketContainer> {
         val packets = arrayListOf<NMSPacketContainer>()
-
-        // 🔴 수정: entity를 CraftEntity로 캐스팅하고 새로운 변수를 사용합니다.
-        val craftEntity = entity as CraftEntity
-
-        // 1. PlayerInfoUpdate 부분
-        if (craftEntity is Player) {
+        entity as CraftEntity
+        if (entity is Player) {
             packets.add(
                 NMSPacketContainer(
                     ClientboundPlayerInfoUpdatePacket(
                         ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER,
-                        craftEntity.handle as ServerPlayer
+                        entity.handle as ServerPlayer
                     )
                 )
             )
         }
+        val nmsEntity = entity.handle
+        val serverLevel = nmsEntity.level() as net.minecraft.server.level.ServerLevel
+        val tracker = serverLevel.chunkSource.chunkMap.entityMap[nmsEntity.id]
 
-        // 2. ClientboundAddEntityPacket 생성
-        val nmsEntity = craftEntity.handle
-
-        // 🔴 ClientboundAddEntityPacket(int id, UUID uuid, double x, double y, double z, float pitch, float yaw, EntityType<?> entityType, int data, Vec3 velocity, double headYaw)
-        val spawnPacket = ClientboundAddEntityPacket(
-            nmsEntity.id,
-            nmsEntity.uuid,
-            nmsEntity.x,
-            nmsEntity.y,
-            nmsEntity.z,
-            nmsEntity.xRot, // Pitch
-            nmsEntity.yRot, // Yaw
-            nmsEntity.type,
-            0, // Data (주로 0)
-            Vec3.ZERO, // Velocity
-            nmsEntity.yHeadRot.toDouble() // Head Yaw
-        )
-
-        packets.add(NMSPacketContainer(spawnPacket))
+        tracker?.serverEntity?.let {
+            packets.add(NMSPacketContainer(nmsEntity.getAddEntityPacket(it)))
+        }
 
         return packets.toTypedArray()
     }
