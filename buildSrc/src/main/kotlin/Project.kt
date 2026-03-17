@@ -37,8 +37,5 @@ private fun Project.coreTask(name: String) = projectCore.tasks.named(name, Jar::
 val Project.coreDevJar
     get() = coreTask("coreDevJar")
 
-val Project.coreReobfJar
-    get() = coreTask("coreReobfJar")
-
 val Project.coreSourcesJar
     get() = coreTask("sourcesJar")

@@ -64,7 +64,6 @@ tasks {
     }
 
     registerJar("dev", projectApi, coreDevJar)
-    registerJar("reobf", projectApi, coreReobfJar)
     registerJar("clip")
 }
 

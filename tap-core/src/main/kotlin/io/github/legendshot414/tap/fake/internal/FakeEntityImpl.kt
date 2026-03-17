@@ -256,6 +256,7 @@ class FakeEntityImpl<T : Entity> internal constructor(
             clearTrackers()
             return
         }
+        if (!bukkitEntity.isValid) return
 
         if (updateMeta) {
             updateMeta = false
@@ -456,6 +457,8 @@ class FakeEntityImpl<T : Entity> internal constructor(
 
     private fun spawnTo(player: Player) {
         val bukkitEntity = bukkitEntity
+
+        if (!bukkitEntity.isValid) return
 
         bukkitEntity.createSpawnPacket().forEach {
             player.sendPacket(it)
