@@ -14,19 +14,14 @@ subprojects {
                 as io.papermc.paperweight.userdev.PaperweightUserDependenciesExtension
         paperweight.paperDevBundle("${name.substring(1)}-R0.1-SNAPSHOT")
     }
+    extensions.configure<io.papermc.paperweight.userdev.PaperweightUserExtension> {
+        reobfArtifactConfiguration = io.papermc.paperweight.userdev.ReobfArtifactConfiguration.MOJANG_PRODUCTION
+    }
 }
 
 // upstream
 coreDevJar {
     from(subprojects.map { it.sourceSets["main"].output })
-}
-
-coreReobfJar {
-    subprojects.map { it.tasks.named("reobfJar").get() as RemapJar }.onEach {
-        from(zipTree(it.outputJar))
-    }.let {
-        dependsOn(it)
-    }
 }
 
 coreSourcesJar {

@@ -15,27 +15,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import org.gradle.api.Project
-import org.gradle.jvm.tasks.Jar
+package io.github.legendshot414.tap.v1_21_4.protocol
 
-private fun Project.subproject(name: String) = project(":${rootProject.name}-$name")
+import io.github.legendshot414.tap.protocol.PacketContainer
+import net.minecraft.network.protocol.Packet
+import org.bukkit.craftbukkit.entity.CraftPlayer
+import org.bukkit.entity.Player
 
-val Project.projectApi
-    get() = subproject("api")
 
-val Project.projectCore
-    get() = subproject("core")
-
-val Project.projectDongle
-    get() = findProject(":${rootProject.name}-dongle")
-
-val Project.projectPlugin
-    get() = subproject("plugin")
-
-private fun Project.coreTask(name: String) = projectCore.tasks.named(name, Jar::class.java)
-
-val Project.coreDevJar
-    get() = coreTask("coreDevJar")
-
-val Project.coreSourcesJar
-    get() = coreTask("sourcesJar")
+class NMSPacketContainer(private val packet: Packet<*>) : PacketContainer {
+    override fun sendTo(player: Player) {
+        (player as CraftPlayer).handle.connection.send(packet, null)
+    }
+}

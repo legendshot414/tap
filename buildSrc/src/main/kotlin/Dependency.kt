@@ -17,7 +17,7 @@
 
 object Dependency {
     object Kotlin {
-        const val Version = "1.9.23"
+        const val Version = "2.3.20"
     }
 
     object Dokka {
@@ -25,6 +25,6 @@ object Dependency {
     }
 
     object Paper {
-        const val Version = "1.21.1"
+        const val Version = "1.21"
     }
 }
