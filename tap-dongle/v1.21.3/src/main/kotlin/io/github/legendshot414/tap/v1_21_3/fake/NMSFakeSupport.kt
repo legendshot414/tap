@@ -24,6 +24,7 @@ import io.github.legendshot414.tap.fake.FakeSkinParts
 import io.github.legendshot414.tap.fake.FakeSupport
 import io.github.legendshot414.tap.v1_21_3.protocol.NMSPacketContainer
 import net.minecraft.core.registries.BuiltInRegistries
+import net.minecraft.network.protocol.game.ClientboundAddEntityPacket
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket
 import net.minecraft.server.level.ClientInformation
 import net.minecraft.server.level.ServerPlayer
@@ -42,6 +43,7 @@ import org.bukkit.craftbukkit.entity.CraftPlayer
 import org.bukkit.craftbukkit.inventory.CraftItemStack
 import org.bukkit.entity.*
 import org.bukkit.inventory.ItemStack
+import net.minecraft.world.phys.Vec3
 import java.util.*
 
 /**
@@ -123,12 +125,24 @@ class NMSFakeSupport : FakeSupport {
             )
         }
         val nmsEntity = entity.handle
-        val serverLevel = nmsEntity.level() as net.minecraft.server.level.ServerLevel
-        val tracker = serverLevel.chunkSource.chunkMap.entityMap[nmsEntity.id]
 
-        tracker?.serverEntity?.let {
-            packets.add(NMSPacketContainer(nmsEntity.getAddEntityPacket(it)))
-        }
+        packets.add(NMSPacketContainer(
+            ClientboundAddEntityPacket(
+                nmsEntity.id,
+                nmsEntity.uuid,
+                nmsEntity.x,
+                nmsEntity.y,
+                nmsEntity.z,
+                nmsEntity.xRot,
+                nmsEntity.yRot,
+                nmsEntity.type,
+                0,
+                nmsEntity.deltaMovement,
+                nmsEntity.yHeadRot.toDouble()
+            )
+        )
+        )
+
 
         return packets.toTypedArray()
     }
