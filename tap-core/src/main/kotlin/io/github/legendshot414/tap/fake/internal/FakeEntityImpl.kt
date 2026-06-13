@@ -460,30 +460,45 @@ class FakeEntityImpl<T : Entity> internal constructor(
 
         if (!bukkitEntity.isValid) return
 
-        bukkitEntity.createSpawnPacket().forEach {
-            player.sendPacket(it)
-        }
-        player.sendPacket(PacketSupport.entityHeadLook(bukkitEntity.entityId, location.yaw))
-        player.sendPacket(PacketSupport.entityMetadata(bukkitEntity))
+        println("[TAP] spawnTo player=${player.name} entity=${bukkitEntity.entityId} type=${bukkitEntity.type}")
 
-        if (bukkitEntity is LivingEntity) {
-            PacketSupport.entityEquipment(bukkitEntity).let { packet ->
-                player.sendPacket(packet)
+        try {
+            bukkitEntity.createSpawnPacket().forEach {
+                player.sendPacket(it)
             }
-        }
+            println("[TAP] spawn packet sent")
 
-        _passengers.let { passengers ->
-            if (passengers.isNotEmpty()) {
+            player.sendPacket(PacketSupport.entityHeadLook(bukkitEntity.entityId, location.yaw))
+            println("[TAP] headlook sent")
+
+            player.sendPacket(PacketSupport.entityMetadata(bukkitEntity))
+            println("[TAP] metadata sent")
+
+            if (bukkitEntity is LivingEntity) {
+                PacketSupport.entityEquipment(bukkitEntity).let { packet ->
+                    player.sendPacket(packet)
+                }
+                println("[TAP] equipment sent")
+            }
+
+            _passengers.let { passengers ->
+                if (passengers.isNotEmpty()) {
+                    player.sendPacket(
+                        PacketSupport.mount(bukkitEntity.entityId, passengers.toIntArray())
+                    )
+                }
+            }
+
+            vehicle?.let { vehicle ->
                 player.sendPacket(
-                    PacketSupport.mount(bukkitEntity.entityId, passengers.toIntArray())
+                    PacketSupport.mount(vehicle.bukkitEntity.entityId, vehicle._passengers.toIntArray())
                 )
             }
-        }
 
-        vehicle?.let { vehicle ->
-            player.sendPacket(
-                PacketSupport.mount(vehicle.bukkitEntity.entityId, vehicle._passengers.toIntArray())
-            )
+            println("[TAP] spawnTo complete")
+        } catch (e: Throwable) {
+            println("[TAP] spawnTo ERROR for entity=${bukkitEntity.entityId}")
+            e.printStackTrace()
         }
     }
 
