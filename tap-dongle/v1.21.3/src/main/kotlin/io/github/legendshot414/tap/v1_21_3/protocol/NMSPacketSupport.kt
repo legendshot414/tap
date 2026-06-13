@@ -19,7 +19,9 @@ package io.github.legendshot414.tap.v1_21_3.protocol
 
 import com.mojang.datafixers.util.Pair
 import io.github.legendshot414.tap.protocol.*
+import io.netty.buffer.Unpooled
 import it.unimi.dsi.fastutil.ints.IntArrayList
+import net.minecraft.network.RegistryFriendlyByteBuf
 import net.minecraft.network.protocol.game.*
 import net.minecraft.world.entity.PositionMoveRotation
 import net.minecraft.world.phys.Vec3
@@ -38,6 +40,7 @@ import org.bukkit.craftbukkit.CraftWorld
 import net.minecraft.network.protocol.game.ClientboundBundlePacket
 import net.minecraft.network.protocol.game.ClientGamePacketListener
 import net.minecraft.network.protocol.Packet
+import org.bukkit.craftbukkit.CraftServer
 
 class NMSPacketSupport : PacketSupport {
     companion object {
@@ -60,20 +63,10 @@ class NMSPacketSupport : PacketSupport {
 
         val entityId = entity.entityId
         val entityData = entity.handle.entityData
-        val nonDefault = entityData.nonDefaultValues ?: emptyList()
 
-        val metadataPacket = ClientboundSetEntityDataPacket(entityId, nonDefault)
-
-        val isInitalSpawn = Thread.currentThread().stackTrace.any {it.methodName.contains("spawnTo")}
-
-        return if (isInitalSpawn) {
-           val bundleList = listOf<Packet<ClientGamePacketListener>>(
-               metadataPacket as Packet<ClientGamePacketListener>
-           )
-           NMSPacketContainer(ClientboundBundlePacket(bundleList))
-       }else{
-            NMSPacketContainer(metadataPacket)
-       }
+        // nonDefaultValues가 null일때 ClientboundSetEntityDataPacket.pack(ClientboundSetEntityDataPacket.java:17) 에서 NPE 발생
+        val packet = ClientboundSetEntityDataPacket(entityId, entityData.nonDefaultValues ?: emptyList())
+        return NMSPacketContainer(packet)
     }
 
 
@@ -93,15 +86,12 @@ class NMSPacketSupport : PacketSupport {
         pitch: Float,
         onGround: Boolean,
     ): NMSPacketContainer {
-        val world = (Bukkit.getWorlds().first() as CraftWorld).handle
-        val nmsEntity = world.getEntity(entityId)
-            ?: throw IllegalArgumentException("Entity with id $entityId not found")
-
         val packet = ClientboundTeleportEntityPacket(
             entityId,
-            PositionMoveRotation(Vec3(x, y , z), Vec3.ZERO, yaw, pitch),
+            PositionMoveRotation(Vec3(x, y, z), Vec3.ZERO, yaw, pitch),
             emptySet(),
-            onGround)
+            onGround
+        )
         return NMSPacketContainer(packet)
     }
 
@@ -149,15 +139,11 @@ class NMSPacketSupport : PacketSupport {
     }
 
     override fun entityHeadLook(entityId: Int, yaw: Float): NMSPacketContainer {
-        // 1. Entity 객체를 찾습니다.
-        val world = (Bukkit.getWorlds().first() as CraftWorld).handle
-        val nmsEntity = world.getEntity(entityId)
-            ?: throw IllegalArgumentException("Entity with id $entityId not found for entityHeadLook")
+        val byteBuf = RegistryFriendlyByteBuf(Unpooled.buffer(), (Bukkit.getServer() as CraftServer).server.registryAccess())
+        byteBuf.writeVarInt(entityId)
+        byteBuf.writeByte(yaw.toProtocolDegrees())
+        val packet = ClientboundRotateHeadPacket.STREAM_CODEC.decode(byteBuf)
 
-        val packet = ClientboundRotateHeadPacket(
-            nmsEntity,
-            yaw.toProtocolDegrees().toByte()
-        )
         return NMSPacketContainer(packet)
     }
 
@@ -171,29 +157,32 @@ class NMSPacketSupport : PacketSupport {
         entityId: Int,
         data: Byte
     ): NMSPacketContainer {
-        val world = (Bukkit.getWorlds().first() as CraftWorld).handle
-        val nmsEntity = world.getEntity(entityId)
-            ?: throw IllegalArgumentException("Entity with id $entityId not found for entityStatus")
+        val byteBuf = RegistryFriendlyByteBuf(Unpooled.buffer(), (Bukkit.getServer() as CraftServer).server.registryAccess())
+        byteBuf.writeVarInt(entityId)
+        byteBuf.writeByte(data.toInt())
+        val packet = ClientboundEntityEventPacket.STREAM_CODEC.decode(byteBuf)
 
-        val packet = ClientboundEntityEventPacket(nmsEntity, data)
         return NMSPacketContainer(packet)
     }
     override fun entityAnimation(
         entityId: Int,
         action: Int
     ): NMSPacketContainer {
-        val world = (Bukkit.getWorlds().first() as CraftWorld).handle
-        val nmsEntity = world.getEntity(entityId)
-            ?: throw IllegalArgumentException("Entity with id $entityId not found for entityAnimation")
+        val bytebuf = RegistryFriendlyByteBuf(Unpooled.buffer(), (Bukkit.getServer() as CraftServer).server.registryAccess())
+        bytebuf.writeVarInt(entityId)
+        bytebuf.writeByte(action)
 
-        val packet = ClientboundAnimatePacket(nmsEntity, action)
+        val packet = ClientboundAnimatePacket.STREAM_CODEC.decode(bytebuf)
         return NMSPacketContainer(packet)
     }
 
     override fun hurtAnimation(entityId: Int, yaw: Float): PacketContainer {
-        // 🔴 오류 수정: FriendlyByteBuf 대신 entityId와 yaw를 직접 전달
-        // NMS 시그니처: ClientboundHurtAnimationPacket(int entityId, float yaw)
-        val packet = ClientboundHurtAnimationPacket(entityId, yaw)
+        val byteBuf = RegistryFriendlyByteBuf(Unpooled.buffer(), (Bukkit.getServer() as CraftServer).server.registryAccess())
+
+        byteBuf.writeVarInt(entityId)
+        byteBuf.writeFloat(yaw)
+
+        val packet = ClientboundHurtAnimationPacket.STREAM_CODEC.decode(byteBuf)
         return NMSPacketContainer(packet)
     }
 
@@ -201,13 +190,11 @@ class NMSPacketSupport : PacketSupport {
         entityId: Int,
         mountEntityIds: IntArray
     ): NMSPacketContainer {
-        // 1. NMS Entity 객체를 찾습니다. (Entity! 인수를 위해 필요)
-        val world = (Bukkit.getWorlds().first() as CraftWorld).handle
-        val nmsEntity = world.getEntity(entityId)
-            ?: throw IllegalArgumentException("Entity with id $entityId not found for mount")
+        val bytebuf = RegistryFriendlyByteBuf(Unpooled.buffer(), (Bukkit.getServer() as CraftServer).server.registryAccess())
+        bytebuf.writeVarInt(entityId)
+        bytebuf.writeVarIntArray(mountEntityIds)
 
-
-        val packet = ClientboundSetPassengersPacket(nmsEntity)
+        val packet = ClientboundSetPassengersPacket.STREAM_CODEC.decode(bytebuf)
         return NMSPacketContainer(packet)
     }
 
