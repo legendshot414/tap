@@ -1,10 +1,11 @@
+import org.gradle.configurationcache.extensions.capitalized
 
 dependencies {
     implementation(projectApi)
 }
 
 extra.apply {
-    set("pluginName", rootProject.name.split('-').joinToString("") { it.replaceFirstChar { c -> c.uppercase() } })
+    set("pluginName", rootProject.name.split('-').joinToString("") { it.capitalize() })
     set("packageName", rootProject.name.replace("-", ""))
     set("kotlinVersion", Dependency.Kotlin.Version)
     set("paperVersion", Dependency.Paper.Version)
@@ -42,7 +43,7 @@ tasks {
             rename("clip.yml", "plugin.yml")
         }
     }.also { jar ->
-        register<Copy>("test${classifier.replaceFirstChar { it.uppercase() }}Jar") {
+        register<Copy>("test${classifier.capitalized()}Jar") {
             val prefix = rootProject.name
             val plugins = rootProject.file(".server/plugins-$classifier")
             val update = File(plugins, "update")
@@ -64,6 +65,7 @@ tasks {
     }
 
     registerJar("dev", projectApi, coreDevJar)
+    registerJar("reobf", projectApi, coreReobfJar)
     registerJar("clip")
 }
 

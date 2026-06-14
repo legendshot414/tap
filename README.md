@@ -1,8 +1,8 @@
 # Tap
 
-[![Kotlin](https://img.shields.io/badge/java-21-ED8B00.svg?logo=java)](https://www.azul.com/)
-[![Kotlin](https://img.shields.io/badge/kotlin-1.9.23-585DEF.svg?logo=kotlin)](http://kotlinlang.org)
-[![Gradle](https://img.shields.io/badge/gradle-9.0.0-02303A.svg?logo=gradle)](https://gradle.org)
+[![Kotlin](https://img.shields.io/badge/java-17-ED8B00.svg?logo=java)](https://www.azul.com/)
+[![Kotlin](https://img.shields.io/badge/kotlin-1.8.22-585DEF.svg?logo=kotlin)](http://kotlinlang.org)
+[![Gradle](https://img.shields.io/badge/gradle-8.2.1-02303A.svg?logo=gradle)](https://gradle.org)
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.monun/tap-core)](https://search.maven.org/artifact/io.github.monun/tap-core)
 [![GitHub](https://img.shields.io/github/license/monun/tap)](https://www.gnu.org/licenses/gpl-3.0.html)
 [![Kotlin](https://img.shields.io/badge/youtube-각별-red.svg?logo=youtube)](https://www.youtube.com/channel/UCDrAR1OWC2MD4s0JLetN0MA)
@@ -25,10 +25,16 @@
     * PersistentData API 접근성 개선
 
 * #### Supported minecraft versions
-    * 1.21
-    * 1.21.1
-    * 1.21.3
-    
+    * 1.18
+    * 1.18.1
+    * 1.18.2
+    * 1.19
+    * 1.19.1
+    * 1.19.2
+    * 1.19.3
+    * 1.19.4
+    * 1.20
+    * 1.20.1
 
 ---
 

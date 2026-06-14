@@ -7,7 +7,7 @@ plugins {
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(21))
+        languageVersion.set(JavaLanguageVersion.of(17))
     }
 }
 
@@ -30,12 +30,10 @@ subprojects {
 
         implementation(kotlin("stdlib"))
         implementation(kotlin("reflect"))
-        implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
-        implementation("org.jetbrains.kotlinx:kotlinx-serialization-protobuf:1.6.2")
+        implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
+        implementation("org.jetbrains.kotlinx:kotlinx-serialization-protobuf:1.4.1")
 
-        testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
-        testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.0")
-        testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.10.0")
+        testImplementation("org.junit.jupiter:junit-jupiter:5.7.1")
     }
 
     tasks {
@@ -57,7 +55,7 @@ listOf("api", "core").forEach { projectName ->
 
             create<Jar>("dokkaJar") {
                 archiveClassifier.set("javadoc")
-                dependsOn("dokkaGenerateHtml")
+                dependsOn("dokkaHtml")
 
                 from("$buildDir/dokka/html/") {
                     include("**")

@@ -49,7 +49,7 @@ publishing {
             pom {
                 name.set(target.name)
                 description.set("PaperMC extension library written in Kotlin")
-                url.set("https://github.com/legendshot414/${rootProject.name}")
+                url.set("https://github.com/monun/${rootProject.name}")
 
                 licenses {
                     license {
@@ -60,19 +60,19 @@ publishing {
 
                 developers {
                     developer {
-                        id.set("legendshot414")
-                        name.set("legendshot414")
-                        //email.set("monun1010@gmail.com")
-                        url.set("https://github.com/legendshot414")
+                        id.set("monun")
+                        name.set("Monun")
+                        email.set("monun1010@gmail.com")
+                        url.set("https://github.com/monun")
                         roles.addAll("developer")
                         timezone.set("Asia/Seoul")
                     }
                 }
 
                 scm {
-                    connection.set("scm:git:git://github.com/legendshot414/${rootProject.name}.git")
-                    developerConnection.set("scm:git:ssh://github.com:legendshot414/${rootProject.name}.git")
-                    url.set("https://github.com/legendshot414/${rootProject.name}")
+                    connection.set("scm:git:git://github.com/monun/${rootProject.name}.git")
+                    developerConnection.set("scm:git:ssh://github.com:monun/${rootProject.name}.git")
+                    url.set("https://github.com/monun/${rootProject.name}")
                 }
             }
         }
@@ -83,7 +83,7 @@ publishing {
 
         create<MavenPublication>("core") {
             setup(projectCore)
-            artifact(coreDevJar)
+            artifact(coreReobfJar)
         }
 
     }

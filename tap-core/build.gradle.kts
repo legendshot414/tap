@@ -11,4 +11,7 @@ tasks {
         from(sourceSets["main"].output)
     }
 
+    register<Jar>("coreReobfJar") {
+        from(sourceSets["main"].output)
+    }
 }
