@@ -21,7 +21,7 @@ import com.mojang.datafixers.util.Pair
 import io.github.legendshot414.tap.protocol.*
 import io.netty.buffer.Unpooled
 import it.unimi.dsi.fastutil.ints.IntArrayList
-import net.minecraft.network.RegistryFriendlyByteBuf
+import net.minecraft.network.FriendlyByteBuf
 import net.minecraft.network.protocol.game.*
 import net.minecraft.world.entity.PositionMoveRotation
 import net.minecraft.world.phys.Vec3
@@ -35,12 +35,6 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
 import java.util.*
 import net.minecraft.world.entity.EquipmentSlot as NMSEquipmentSlot
-import org.bukkit.Bukkit
-import org.bukkit.craftbukkit.CraftWorld
-import net.minecraft.network.protocol.game.ClientboundBundlePacket
-import net.minecraft.network.protocol.game.ClientGamePacketListener
-import net.minecraft.network.protocol.Packet
-import org.bukkit.craftbukkit.CraftServer
 
 class NMSPacketSupport : PacketSupport {
     companion object {
@@ -139,7 +133,7 @@ class NMSPacketSupport : PacketSupport {
     }
 
     override fun entityHeadLook(entityId: Int, yaw: Float): NMSPacketContainer {
-        val byteBuf = RegistryFriendlyByteBuf(Unpooled.buffer(), (Bukkit.getServer() as CraftServer).server.registryAccess())
+        val byteBuf = FriendlyByteBuf(Unpooled.buffer())
         byteBuf.writeVarInt(entityId)
         byteBuf.writeByte(yaw.toProtocolDegrees())
         val packet = ClientboundRotateHeadPacket.STREAM_CODEC.decode(byteBuf)
@@ -157,7 +151,7 @@ class NMSPacketSupport : PacketSupport {
         entityId: Int,
         data: Byte
     ): NMSPacketContainer {
-        val byteBuf = RegistryFriendlyByteBuf(Unpooled.buffer(), (Bukkit.getServer() as CraftServer).server.registryAccess())
+        val byteBuf = FriendlyByteBuf(Unpooled.buffer())
         byteBuf.writeVarInt(entityId)
         byteBuf.writeByte(data.toInt())
         val packet = ClientboundEntityEventPacket.STREAM_CODEC.decode(byteBuf)
@@ -168,7 +162,7 @@ class NMSPacketSupport : PacketSupport {
         entityId: Int,
         action: Int
     ): NMSPacketContainer {
-        val bytebuf = RegistryFriendlyByteBuf(Unpooled.buffer(), (Bukkit.getServer() as CraftServer).server.registryAccess())
+        val bytebuf = FriendlyByteBuf(Unpooled.buffer())
         bytebuf.writeVarInt(entityId)
         bytebuf.writeByte(action)
 
@@ -177,7 +171,7 @@ class NMSPacketSupport : PacketSupport {
     }
 
     override fun hurtAnimation(entityId: Int, yaw: Float): PacketContainer {
-        val byteBuf = RegistryFriendlyByteBuf(Unpooled.buffer(), (Bukkit.getServer() as CraftServer).server.registryAccess())
+        val byteBuf = FriendlyByteBuf(Unpooled.buffer())
 
         byteBuf.writeVarInt(entityId)
         byteBuf.writeFloat(yaw)
@@ -190,7 +184,7 @@ class NMSPacketSupport : PacketSupport {
         entityId: Int,
         mountEntityIds: IntArray
     ): NMSPacketContainer {
-        val bytebuf = RegistryFriendlyByteBuf(Unpooled.buffer(), (Bukkit.getServer() as CraftServer).server.registryAccess())
+        val bytebuf = FriendlyByteBuf(Unpooled.buffer())
         bytebuf.writeVarInt(entityId)
         bytebuf.writeVarIntArray(mountEntityIds)
 
