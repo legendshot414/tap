@@ -17,7 +17,6 @@
 
 package io.github.legendshot414.tap.v1_20_1.protocol
 
-import com.mojang.datafixers.util.Pair
 import io.github.legendshot414.tap.protocol.*
 import io.netty.buffer.Unpooled
 import it.unimi.dsi.fastutil.ints.IntArrayList
@@ -63,7 +62,7 @@ class NMSPacketSupport : PacketSupport {
 
     override fun entityEquipment(entityId: Int, equipments: Map<EquipmentSlot, ItemStack>): NMSPacketContainer {
         val packet = ClientboundSetEquipmentPacket(entityId, equipments.map { entry ->
-            Pair(entry.key.toNMS(), CraftItemStack.asNMSCopy(entry.value))
+            com.mojang.datafixers.util.Pair(entry.key.toNMS(), CraftItemStack.asNMSCopy(entry.value))
         })
         return NMSPacketContainer(packet)
     }

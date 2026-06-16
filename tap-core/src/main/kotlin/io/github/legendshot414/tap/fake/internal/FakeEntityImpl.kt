@@ -256,7 +256,6 @@ class FakeEntityImpl<T : Entity> internal constructor(
             clearTrackers()
             return
         }
-        if (!bukkitEntity.isValid) return
 
         if (updateMeta) {
             updateMeta = false
