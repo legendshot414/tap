@@ -21,7 +21,10 @@ import com.google.common.collect.ImmutableList
 import io.github.legendshot414.tap.fake.FakeEntity
 import io.github.legendshot414.tap.fake.createSpawnPacket
 import io.github.legendshot414.tap.fake.tap
-import io.github.legendshot414.tap.protocol.*
+import io.github.legendshot414.tap.protocol.AnimationType
+import io.github.legendshot414.tap.protocol.PacketContainer
+import io.github.legendshot414.tap.protocol.PacketSupport
+import io.github.legendshot414.tap.protocol.sendPacket
 import io.github.legendshot414.tap.ref.getValue
 import io.github.legendshot414.tap.ref.weaky
 import org.bukkit.Location
@@ -486,7 +489,7 @@ class FakeEntityImpl<T : Entity> internal constructor(
 
     internal fun despawn() {
         if (bukkitEntity is Player) {
-            trackers.sendServerPacketAll(PacketSupport.playerInfoAction(PlayerInfoAction.REMOVE, bukkitEntity))
+            trackers.sendServerPacketAll(PacketSupport.playerInfoRemove(bukkitEntity))
         }
         trackers.sendServerPacketAll(PacketSupport.removeEntity((bukkitEntity.entityId)))
     }
@@ -497,7 +500,7 @@ class FakeEntityImpl<T : Entity> internal constructor(
 
     internal fun despawnTo(player: Player) {
         if (bukkitEntity is Player) {
-            player.sendPacket(PacketSupport.playerInfoAction(PlayerInfoAction.REMOVE, bukkitEntity))
+            player.sendPacket(PacketSupport.playerInfoRemove(bukkitEntity))
         }
         player.sendPacket(PacketSupport.removeEntity((bukkitEntity.entityId)))
     }

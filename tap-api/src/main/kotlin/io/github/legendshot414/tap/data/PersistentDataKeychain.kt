@@ -6,12 +6,12 @@ import kotlinx.serialization.encodeToByteArray
 import kotlinx.serialization.protobuf.ProtoBuf
 import org.bukkit.Bukkit
 import org.bukkit.Location
-import org.bukkit.util.Vector
 import org.bukkit.NamespacedKey
 import org.bukkit.block.Block
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataType
+import org.bukkit.util.Vector
 import java.nio.ByteBuffer
 import java.util.*
 

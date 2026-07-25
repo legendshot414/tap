@@ -83,7 +83,7 @@ publishing {
 
         create<MavenPublication>("core") {
             setup(projectCore)
-            artifact(coreReobfJar)
+            artifact(coreDevJar)
         }
 
     }

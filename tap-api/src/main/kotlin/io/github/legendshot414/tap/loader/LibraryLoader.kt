@@ -17,6 +17,7 @@
 
 package io.github.legendshot414.tap.loader
 
+import io.github.legendshot414.tap.loader.LibraryLoader.minecraftVersion
 import org.bukkit.Bukkit
 import java.lang.reflect.InvocationTargetException
 

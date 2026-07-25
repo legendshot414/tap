@@ -2,8 +2,8 @@ package io.github.legendshot414.tap.plugin.test
 
 import io.github.legendshot414.tap.plugin.test.unit.complex.TestFakeEntityPose
 import io.github.legendshot414.tap.plugin.test.unit.simple.TestConfigSupport
-import io.github.legendshot414.tap.plugin.test.unit.simple.TestPersistentDataSupport
 import io.github.legendshot414.tap.plugin.test.unit.simple.TestNewVersionFetchSupport
+import io.github.legendshot414.tap.plugin.test.unit.simple.TestPersistentDataSupport
 import org.bukkit.Bukkit
 import org.bukkit.event.HandlerList
 import org.bukkit.plugin.Plugin
